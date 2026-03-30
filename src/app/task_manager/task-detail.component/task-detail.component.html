@@ -1,0 +1,105 @@
+<div class="p-6 max-w-3xl mx-auto" *ngIf="task">
+  <button
+    (click)="goBack()"
+    class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 mb-5 transition-colors"
+  >
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+    </svg>
+    Επιστροφή στη λίστα
+  </button>
+
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <!-- Card header -->
+    <div class="flex items-start justify-between px-6 py-4 border-b border-gray-100">
+      <div>
+        <h4 class="text-lg font-bold text-gray-900 mb-2">{{ task.title }}</h4>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span
+            *ngIf="isOverdue()"
+            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700"
+          >
+            ⚠ Εκπρόθεσμο
+          </span>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 ml-4 flex-shrink-0">
+        <button
+          (click)="edit()"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
+          </svg>
+          Επεξεργασία
+        </button>
+        <button
+          (click)="delete()"
+          class="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            />
+          </svg>
+          Διαγραφή
+        </button>
+      </div>
+    </div>
+
+    <!-- Card body -->
+    <div class="px-6 py-5">
+      <div class="mb-5">
+        <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+          Περιγραφή
+        </div>
+        <p class="text-gray-700 leading-relaxed">{{ task.description }}</p>
+      </div>
+
+      <hr class="border-gray-100 my-5" />
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Ανατέθηκε σε
+          </div>
+          <div class="flex items-center gap-2">
+            <div
+              class="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-semibold flex items-center justify-center flex-shrink-0"
+            >
+              {{ task.assignee.charAt(0) }}
+            </div>
+            <span class="font-semibold text-gray-900 text-sm">{{ task.assignee }}</span>
+          </div>
+        </div>
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Προθεσμία
+          </div>
+          <div
+            class="font-semibold text-sm"
+            [class.text-red-600]="isOverdue()"
+            [class.text-gray-900]="!isOverdue()"
+          >
+            <span *ngIf="isOverdue()" class="mr-1">⚠</span>
+            {{ task.dueDate | date: 'dd/MM/yyyy' }}
+          </div>
+        </div>
+        <div>
+          <div class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+            Δημιουργήθηκε
+          </div>
+          <div class="text-gray-700 text-sm">{{ task.createdAt | date: 'dd/MM/yyyy' }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

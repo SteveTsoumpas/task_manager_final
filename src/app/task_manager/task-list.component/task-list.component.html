@@ -1,0 +1,203 @@
+<div class="p-6">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Employee Onboarding</h1>
+      <p class="text-sm text-gray-500 mt-0.5">Διαχείριση tasks ένταξης εργαζομένου</p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+      <div class="text-3xl font-bold text-gray-900">{{ stats.total }}</div>
+      <div class="text-xs text-gray-500 mt-1">Σύνολο Tasks</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+      <div class="text-3xl font-bold text-gray-400">{{ stats.pending }}</div>
+      <div class="text-xs text-gray-500 mt-1">Εκκρεμή</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+      <div class="text-3xl font-bold text-yellow-500">{{ stats.inProgress }}</div>
+      <div class="text-xs text-gray-500 mt-1">Σε Εξέλιξη</div>
+    </div>
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 text-center">
+      <div class="text-3xl font-bold text-green-500">{{ stats.completed }}</div>
+      <div class="text-xs text-gray-500 mt-1">Ολοκληρωμένα</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-6">
+    <div class="flex flex-col md:flex-row gap-3">
+      <div class="flex-1">
+        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1"
+          >Αναζήτηση</label
+        >
+        <input
+          type="text"
+          class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Τίτλος ή περιγραφή..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="applyFilters()"
+        />
+      </div>
+      <div class="md:w-44">
+        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1"
+          >Κατάσταση</label
+        >
+        <select
+          class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [(ngModel)]="filterStatus"
+          (ngModelChange)="applyFilters()"
+        >
+          <option value="all">Όλες</option>
+          <option value="pending">Εκκρεμεί</option>
+          <option value="in-progress">Σε εξέλιξη</option>
+          <option value="completed">Ολοκληρώθηκε</option>
+        </select>
+      </div>
+      <div class="md:w-52">
+        <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1"
+          >Υπάλληλος</label
+        >
+        <select
+          class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [(ngModel)]="filterAssignee"
+          (ngModelChange)="applyFilters()"
+        >
+          <option value="all">Όλοι</option>
+          <option *ngFor="let a of assignees" [value]="a">{{ a }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-100">
+          <tr>
+            <th
+              class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide px-6 py-3"
+            >
+              Τίτλος
+            </th>
+            <th
+              class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 py-3"
+            >
+              Υπάλληλος
+            </th>
+            <th
+              class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 py-3"
+            >
+              Προθεσμία
+            </th>
+            <th
+              class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 py-3"
+            >
+              Προτεραιότητα
+            </th>
+            <th
+              class="text-left text-xs font-semibold text-gray-400 uppercase tracking-wide px-4 py-3"
+            >
+              Κατάσταση
+            </th>
+            <th
+              class="text-right text-xs font-semibold text-gray-400 uppercase tracking-wide px-6 py-3"
+            >
+              Ενέργειες
+            </th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+          <tr *ngFor="let task of filtered" class="hover:bg-gray-50 transition-colors">
+            <td class="px-6 py-4">
+              <div class="font-semibold text-gray-900">{{ task.title }}</div>
+              <div class="text-xs text-gray-400 truncate max-w-[260px] mt-0.5">
+                {{ task.description }}
+              </div>
+            </td>
+            <td class="px-4 py-4">
+              <div class="flex items-center gap-2">
+                <div
+                  class="w-8 h-8 rounded-full bg-blue-600 text-white text-xs font-semibold flex items-center justify-center flex-shrink-0"
+                >
+                  {{ task.assignee.charAt(0) }}
+                </div>
+                <span class="text-gray-700 text-xs">{{ task.assignee }}</span>
+              </div>
+            </td>
+            <td class="px-4 py-4">
+              <span
+                [class.text-red-600]="isOverdue(task)"
+                [class.font-semibold]="isOverdue(task)"
+                class="text-gray-700"
+              >
+                <span *ngIf="isOverdue(task)" class="mr-1">⚠</span>
+                {{ task.dueDate | date: 'dd/MM/yyyy' }}
+              </span>
+            </td>
+
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-end gap-1">
+                <button
+                  (click)="viewTask(task.id)"
+                  class="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                  title="Προβολή"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  (click)="editTask(task.id)"
+                  class="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="Επεξεργασία"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                </button>
+                <button
+                  (click)="deleteTask(task)"
+                  class="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  title="Διαγραφή"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="filtered.length === 0">
+            <td colspan="6" class="text-center text-gray-400 py-16 text-sm">Δεν βρέθηκαν tasks</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
