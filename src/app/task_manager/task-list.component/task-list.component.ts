@@ -65,9 +65,6 @@ export class TaskListComponent implements OnInit, OnDestroy {
     }
   }
 
-  newTask(): void {
-    this.router.navigate(['/tasks/new']);
-  }
 
   statusLabel(status: TaskStatus): string {
     const map: Record<TaskStatus, string> = {
